@@ -3,7 +3,7 @@ from fastapi import FastAPI
 app = FastAPI(title="Triangular Arbitrage Bot API")
 
 stats = {
-    "status": "running",
+    "status": "starting",
     "profit": 0.0,
     "trades": 0,
     "prices_count": 0,
@@ -13,6 +13,14 @@ stats = {
 }
 
 
+@app.on_event("startup")
+def on_startup():
+    from backend.main import start_engine
+
+    start_engine()
+    stats["status"] = "running"
+
+
 @app.get("/")
 def root():
     return {"message": "Triangular Arbitrage Bot API"}
@@ -20,7 +28,7 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"ok": True, "status": "running"}
+    return {"ok": True, "status": stats["status"]}
 
 
 @app.get("/stats")
