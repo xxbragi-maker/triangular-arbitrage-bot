@@ -11,18 +11,21 @@ from backend.market.binance_ws import run_binance_ws
 from backend.market.bybit_ws import run_bybit_ws
 
 
+_engine_started = False
+_engine_lock = threading.Lock()
+
+
 def build_demo_prices(snapshot: dict):
     prices = {}
 
-    # берём сначала Binance, если есть, иначе Bybit
     for symbol in ["BTC/USDT", "ETH/BTC", "ETH/USDT"]:
-        b_key = f"binance:{symbol}"
-        y_key = f"bybit:{symbol}"
+        binance_key = f"binance:{symbol}"
+        bybit_key = f"bybit:{symbol}"
 
-        if b_key in snapshot:
-            prices[symbol] = snapshot[b_key]["bid"]
-        elif y_key in snapshot:
-            prices[symbol] = snapshot[y_key]["bid"]
+        if binance_key in snapshot:
+            prices[symbol] = snapshot[binance_key]["bid"]
+        elif bybit_key in snapshot:
+            prices[symbol] = snapshot[bybit_key]["bid"]
 
     return prices
 
@@ -75,11 +78,22 @@ async def ws_main():
     )
 
 
-def start_background_loop():
-    thread = threading.Thread(target=arbitrage_loop, daemon=True)
-    thread.start()
-
-
-if __name__ == "__main__":
-    start_background_loop()
+def ws_thread_target():
     asyncio.run(ws_main())
+
+
+def start_engine():
+    global _engine_started
+
+    with _engine_lock:
+        if _engine_started:
+            return
+
+        arbitrage_thread = threading.Thread(target=arbitrage_loop, daemon=True)
+        arbitrage_thread.start()
+
+        websocket_thread = threading.Thread(target=ws_thread_target, daemon=True)
+        websocket_thread.start()
+
+        _engine_started = True
+        print("Engine started.")
