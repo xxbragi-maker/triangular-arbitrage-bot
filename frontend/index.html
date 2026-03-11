@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangular Arbitrage Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <h1>Triangular Arbitrage Bot</h1>
+            <p class="subtitle">Binance + Bybit dashboard</p>
+        </header>
+
+        <main class="grid">
+            <div class="card">
+                <div class="label">Status</div>
+                <div class="value" id="status">Loading...</div>
+            </div>
+
+            <div class="card">
+                <div class="label">Profit</div>
+                <div class="value" id="profit">0</div>
+            </div>
+
+            <div class="card">
+                <div class="label">Trades</div>
+                <div class="value" id="trades">0</div>
+            </div>
+
+            <div class="card">
+                <div class="label">Exchange 1</div>
+                <div class="value" id="exchange1">-</div>
+            </div>
+
+            <div class="card">
+                <div class="label">Exchange 2</div>
+                <div class="value" id="exchange2">-</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
